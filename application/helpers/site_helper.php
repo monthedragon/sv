@@ -410,4 +410,32 @@ function alert_html($alerts,$crms,$lu){
 		
 		echo '<td>'.number_format($total_per_dispo,$dec). '</td>';
 	}
+
+    function getLookUpVal($lookUp, $key){
+
+        if(isset($lookUp[$key])){
+            return $lookUp[$key];
+        }
+
+        return $key;
+
+    }
+
+if(!function_exists('globalGetValues'))
+{
+    function globalGetValues($main_details){
+        $detail_arr = array();
+        foreach($main_details as $col=>$details){
+            $value = $details['original_value'];
+
+            if(!empty($details['new_value'])){
+                $value = $details['new_value'];
+            }
+
+            $detail_arr[$col] = $value;
+        }
+
+        return $detail_arr;
+    }
+}
 ?>

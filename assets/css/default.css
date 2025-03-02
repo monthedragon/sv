@@ -1471,3 +1471,18 @@ div.div-mapping-holder{
 	overflow: auto;
 	margin-bottom:20px;
 }
+
+#e_req_msg{
+    height: 300px;
+    overflow: auto; /* Scrollbars appear only when content overflows */
+    color: black;
+    text-transform: uppercase;
+}
+
+hr.record-separator {
+    border: none;
+    height: 1px;
+    background: #ccc;
+    margin: 20px 0;
+    opacity: 0.7;
+}

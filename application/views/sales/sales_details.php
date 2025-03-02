@@ -167,6 +167,8 @@ if($crm_id == 9){
 	echo "<div id='challenger_div'></div>";
 }
 
+//Standard e-request div
+echo "<span id='e_request_div'></span>";
 
 ?>
     <?if($view_only){?>
@@ -193,11 +195,12 @@ if($crm_id == 9){
         </table>
 
 		<?php
-		if($crm_id == 9) {
-			echo "<input type='submit' value='Save and Generate E-REQUEST' id='btn-submit-form' class='btn_sumbmit' action_type='e_request'> <br>";
-			
-			echo "<input type='submit' value='Save and Generate FAMU' id='btn-submit-form' class='btn_sumbmit' action_type='pamu'> <br>";
-		}else{
+        if($crm_id == 9) {
+            echo "<input type='submit' value='Save and Generate E-REQUEST' id='btn-submit-form' class='btn_sumbmit' action_type='e_request'> <br>";
+            echo "<input type='submit' value='Save and Generate FAMU' id='btn-submit-form' class='btn_sumbmit' action_type='pamu'> <br>";
+        }elseif($crm_id == 10) {
+            echo "<input type='submit' value='Save and Generate E-REQUEST' id='btn-submit-form' class='btn_sumbmit' action_type='e_request_save'> <br>";
+        }else{
 			echo "<input type='submit' value='save' id='btn-submit-form' class='btn_sumbmit'>";
 		}		
 		?>
@@ -233,7 +236,7 @@ function do_modal(url,objModal,functionCall,height,width){
 					onClose: function(dialog){
 						$("#"+objModal).html(''); 
 						dialog.container.slideUp('slow', function () { 
-							if(functionCall == 'pamu'){
+							if(functionCall == 'pamu' || functionCall == 'e_request_save'){
 								backToList();
 							}
 							$.modal.close(); // must call this! 		
@@ -251,13 +254,17 @@ function backToList(){
 }
 
 function copyToClipboard(element) {
-  var $temp = $("<textarea>");
-  var brRegex = /<br\s*[\/]?>/gi;
-  $("body").append($temp);
-  $temp.val($(element).html().replace(brRegex, "\r\n")).select();
-  document.execCommand("copy");
-  $temp.remove();
-  //$.modal.close();
+    var $temp = $("<textarea>");
+    var brRegex = /<br\s*[\/]?>/gi;
+
+    // Clone the element and remove <hr> before copying
+    var content = $(element).clone();
+    content.find("hr").replaceWith("\n");
+
+    $("body").append($temp);
+    $temp.val(content.html().replace(brRegex, "\r\n")).select();
+    document.execCommand("copy");
+    $temp.remove();
 }
 
 function closeModal(){
@@ -431,24 +438,37 @@ function populateSourceCode(){
                             alert('DEBUG INFO: '+data);
 							
                         }else if('<?=$crm_id?>' == 9){
-							var a_t = btn_submit.attr('action_type');
-							var modal_url = '';
-							
-							if(a_t == 'e_request'){
-								//generate e_request
-								modal_url = '<?=base_url('sales/challenger_e_request/'.$sale_id.'/'.$crm_id)?>';
-							}else if(a_t == 'pamu'){
-								//generate PAMU	
-								modal_url = '<?=base_url('sales/challenger_e_request/'.$sale_id.'/'.$crm_id.'/1')?>';
-							}
-							
-							if($('#sv-status').val() == '1'){
-								do_modal(modal_url,'challenger_div', a_t,400,850);
-							}else{
-								backToList();
-							}
-							
-						}else{
+                            var a_t = btn_submit.attr('action_type');
+                            var modal_url = '';
+
+                            if(a_t == 'e_request'){
+                                //generate e_request
+                                modal_url = '<?=base_url('sales/challenger_e_request/'.$sale_id.'/'.$crm_id)?>';
+                            }else if(a_t == 'pamu'){
+                                //generate PAMU
+                                modal_url = '<?=base_url('sales/challenger_e_request/'.$sale_id.'/'.$crm_id.'/1')?>';
+                            }
+
+                            if($('#sv-status').val() == '1'){
+                                do_modal(modal_url,'challenger_div', a_t,400,850);
+                            }else{
+                                backToList();
+                            }
+
+                        }else if('<?=$crm_id?>' == 10){
+                            var a_t = btn_submit.attr('action_type');
+                            var modal_url = '';
+
+                            //generate e_request
+                            modal_url = '<?=base_url('sales/supple_e_request/'.$sale_id.'/'.$crm_id)?>';
+
+                            if($('#sv-status').val() == '1'){
+                                do_modal(modal_url,'e_request_div', a_t,400,850);
+                            }else{
+                                backToList();
+                            }
+
+                        }else{
 													
 							if($('#sv-status').val() == '1'){
 								window.open('<?=base_url('reports/generate_xls_report/'.$crm_id.'/'.$sale_main_details['table_recid'])?>')
