@@ -1,2 +1,7 @@
-index.php
+.htaccess
+changes.txt
 application/config/config.php
+/index.php
+uploads/
+assets/images/logo*
+.idea/
