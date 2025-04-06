@@ -275,22 +275,28 @@ function populateSourceCode(){
 	
 	//As of June 18, 2021
 	//Auto populate "Source Code" base on the "Acct B Score"
-	
+    //Additional condition based on the selected amf_product (April 06, 2025)
+    let amf_product = $("[id^='amf_product']").first().val();
 	var acct_b_score = parseInt($('#td_acct_b_score').html());
 	var source_code = 'BLANK'; //if nothing matched then set "BLANK" as word
-	
-	// "1315003005495" IF account_b_score within 630 TO 639 
+
+    // "1315003005895" IF selected is "AMF WAIVED FOR LIFE", ELSE apply old logic:
+	// "1315003005495" IF account_b_score within 630 TO 639
 	// "1315003005595" IF account_b_score within 640 TO 649 
 	// "1315003005695" IF account_b_score within 650 HIGH 	
-	
-	if(acct_b_score >= 630 && acct_b_score <= 639){
-		source_code = '1315003005495';
-	}else if(acct_b_score >= 640 && acct_b_score <= 649){
-		source_code = '1315003005595';
-	}else if(acct_b_score >= 650){
-		source_code = '1315003005695';
-	}
-	
+
+    if(amf_product == '1'){
+        source_code = '1315003005895';
+    }else{
+        if(acct_b_score >= 630 && acct_b_score <= 639){
+            source_code = '1315003005495';
+        }else if(acct_b_score >= 640 && acct_b_score <= 649){
+            source_code = '1315003005595';
+        }else if(acct_b_score >= 650){
+            source_code = '1315003005695';
+        }
+    }
+
 	$('#sv_source_code_0_0').val(source_code);
 	
 }
@@ -558,5 +564,12 @@ function populateSourceCode(){
 			
 			
 		}
+
+        if('<?=$crm_id?>' == 1){
+            $("[id^='amf_product']").on('change', function() {
+                populateSourceCode();
+            });
+        }
+
     })
 </script>

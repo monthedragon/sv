@@ -8,24 +8,16 @@ foreach($sales as $relatedTableId => $baseRecIdArr){
 
     foreach($baseRecIdArr as $baseRecid => $suppleDetails){
         $detail_arr = globalGetValues($suppleDetails);
-        $message .= $detail_arr['lastname'] . "<br>";
-        $message .= $detail_arr['firstname'] . "<br>";
-        $message .= $detail_arr['middlename'] . "<br>";
-        $message .= $detail_arr['embossed_name'] . "<br>";
-        $message .= getLookUpVal($lookup['relationship'], $detail_arr['relationship']) . "<br>";
-        $message .= date("m/d/Y", strtotime($detail_arr['dob'])) . "<br>"; // DOB (M/D/Y)
-        $message .= getLookUpVal($lookup['gender'], $detail_arr['gender']) . "<br>";
-        $message .= (!empty($detail_arr['civil_status']) ? ucfirst($detail_arr['civil_status']) : "-") . "<br>";
-        $message .= (!empty($detail_arr['email_add']) ? $detail_arr['email_add'] : "-") . "<br>";
-        $message .= (!empty($detail_arr['mobile_no']) ? $detail_arr['mobile_no'] : "-") . "<br>";
-        $message .= number_format($detail_arr['assigned_spend_limit'], 2) . "<br>"; // Spend limit with 2 decimal places
-
-        $message .= getLookUpVal($lookup['employment_info'], $detail_arr['employment']). "<br>";
-        $message .= (!empty($detail_arr['present_add']) ? $detail_arr['present_add'] : "-") . "<br>";
         $message .= $detail_arr['place_of_birth'] . "<br>";
-        $message .= $detail_arr['nationality'] . "<br>";
-        $message .= "LEXTSI" . "<br>";
-        $message .= "TELEPRIME SOLUTIONS" . "<br>";
+        $message .= (!empty($detail_arr['present_add']) ? $detail_arr['present_add'] : "-") . "<br>";
+        $message .= getLookUpVal($lookup['employment_info'], $detail_arr['employment']). "<br>";
+        $message .= $detail_arr['comp_name'] . "<br>";
+        $message .= $detail_arr['nature_of_bus'] . "<br>";
+        $message .= $detail_arr['comp_add'] . "<br>";
+        $message .= $detail_arr['occupation_pos'] . "<br>";
+        $message .= $detail_arr['office_no'] . "<br>";
+        $message .= $detail_arr['annual_income'] . "<br>";
+        $message .= number_format($detail_arr['assigned_spend_limit'], 2) . "<br>"; // Spend limit with 2 decimal places
         $message .=  getLookUpVal($lookup['submitted_id'], $detail_arr['submitted_id']). "<br>";
         $message .= "<hr class='record-separator'>";
     }
