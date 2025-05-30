@@ -129,6 +129,7 @@ Class Reports extends Auth_Controller{
 		$crms = $this->my_utils->get_all_crms();
 		$newCrms = array();
 		foreach($crms as $details){
+            if(!$details['is_active']) continue;
 			$newCrms[$details['id']] = $details['name'];
 		}
 		
@@ -159,7 +160,7 @@ Class Reports extends Auth_Controller{
 	}
 	
 	public function recurring_leads_generate($do_old_version = 0){
-		
+
 		$pdata = $this->input->post();		
 		
 		$this->reports_model->crm_id = $pdata['crm_id'];
@@ -170,9 +171,9 @@ Class Reports extends Auth_Controller{
 		$crmDetails = $this->my_utils->get_crm_by_id($pdata['crm_id']);
 		$newconn = $this->my_utils->change_conn($crmDetails);
 		
-		$is_challenger = ($this->reports_model->crm_id == 9 && !$do_old_version);
-		
-		if($is_challenger){
+		$is_challenger = ($this->reports_model->crm_id == 9);
+
+        if($is_challenger){
 			//challenger
 			$selectFields = "	
 								ch_campaign,
@@ -183,27 +184,34 @@ Class Reports extends Auth_Controller{
 							    SUM(IF(callresult = 'AG', REPLACE(c_loan_amount, ',', ''), 0)) AS LOAN_AMOUNT,
 								COUNT(*) AS CTR ";
 		}else{
-			$selectFields = "	lead_identity,
+            //default query
+
+            $customSelect = '';
+            if($this->reports_model->crm_id == 1){
+                $customSelect = "COUNT(CASE WHEN c_is_web_shopper = 1 AND CALLRESULT =  'AG' THEN 1 ELSE NULL END) AS 'WEB_SHOPPER_AG_CTR',";
+            }
+
+            $selectFields = "	lead_identity,
 							callresult,
 							IF(callresult IN ('NI', 'CB'), sub_callresult,
-								IF (callresult = 'AG' AND sv_card_request_by_client IS NOT NULL, (sv_card_request_by_client), 
+								IF (callresult = 'AG' AND sv_card_request_by_client IS NOT NULL, (sv_card_request_by_client),
 										IF (callresult = 'AG' AND sv_card_request_by_client IS NULL, 'SALE_UNVERIFIED' ,callresult)
 									)
-								) AS 'FINAL_DISPO', 
-							COUNT(CASE WHEN c_is_web_shopper = 1 AND CALLRESULT =  'AG' THEN 1 ELSE NULL END) AS 'WEB_SHOPPER_AG_CTR', 
+								) AS 'FINAL_DISPO',
+							{$customSelect}
 							COUNT(CASE WHEN c_location = 'MANILA' THEN 1 ELSE NULL END) AS 'MLA',
 							COUNT(CASE WHEN c_location = 'PROVINCIAL' THEN 1 ELSE NULL END) AS 'PROV',
-							COUNT(CASE WHEN c_location NOT IN ('PROVINCIAL','MANILA') THEN 1 ELSE NULL END) AS 'UNTAG_LOC',							
+							COUNT(CASE WHEN c_location NOT IN ('PROVINCIAL','MANILA') THEN 1 ELSE NULL END) AS 'UNTAG_LOC',
 							COUNT(*) AS CTR";
-		}
-		
+        }
+
 		$whereArr = array($crmDetails['calldate_field'].' >='=>$pdata['start_calldate'] . ' 00:00:00',
 						  $crmDetails['calldate_field'].' <='=>$pdata['end_calldate'] . ' 23:59:59');
 		
 		$newconn->select($selectFields,false)
 				->from($crmDetails['main_table'])
 				->where($whereArr);
-		
+
 		if($pdata['lead_identity']){
 			$newconn->where_in('lead_identity',$pdata['lead_identity']);
 		}
@@ -217,8 +225,8 @@ Class Reports extends Auth_Controller{
 									->group_by("lead_identity,FINAL_DISPO")->get()->result_array();
 		}			
 		
-							
-		// echo '<pre>'.$newconn->last_query();		
+
+		//echo '<pre>'.$newconn->last_query();
 		$data['ag_res'] = $this->getOnlyAGResult($newconn,$crmDetails,$pdata);
 		// echo '<pre>';
 		// var_dump($data['only_AG_result']);
@@ -236,12 +244,17 @@ Class Reports extends Auth_Controller{
 	}
 	
 	function getOnlyAGResult($newconn,$crmDetails,$pdata){
-		
+
+        $customSelect = '';
+        if($this->reports_model->crm_id == 1){
+            $customSelect = ",COUNT(CASE WHEN c_is_web_shopper = 1 AND c_location = 'MANILA' THEN 1 ELSE NULL END) AS 'WEB_SHOP_MLA',
+						     COUNT(CASE WHEN c_is_web_shopper = 1 AND c_location = 'PROVINCIAL' THEN 1 ELSE NULL END) AS 'WEB_SHOP_PROV'";
+        }
 		$selectFields = "  lead_identity, 
 						   COUNT(CASE WHEN c_location = 'MANILA' THEN 1 ELSE NULL END) AS 'AG_MLA', 
-						   COUNT(CASE WHEN c_location = 'PROVINCIAL' THEN 1 ELSE NULL END) AS 'AG_PROV',
-						   COUNT(CASE WHEN c_is_web_shopper = 1 AND c_location = 'MANILA' THEN 1 ELSE NULL END) AS 'WEB_SHOP_MLA', 
-						   COUNT(CASE WHEN c_is_web_shopper = 1 AND c_location = 'PROVINCIAL' THEN 1 ELSE NULL END) AS 'WEB_SHOP_PROV'";
+						   COUNT(CASE WHEN c_location = 'PROVINCIAL' THEN 1 ELSE NULL END) AS 'AG_PROV'
+						   {$customSelect}
+						   ";
 		
 		$whereArr = array($crmDetails['calldate_field'].' >='=>$pdata['start_calldate'] . ' 00:00:00',
 						  $crmDetails['calldate_field'].' <='=>$pdata['end_calldate'] . ' 23:59:59');
