@@ -37,6 +37,9 @@
 
 <script>
 	$(function(){
+
+        $(".date").datepicker({'dateFormat':'yy-mm-dd'});
+        
 		$('form').submit(function(){
 		
 			if($(this).valid()){

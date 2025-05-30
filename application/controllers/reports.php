@@ -186,18 +186,25 @@ Class Reports extends Auth_Controller{
 		}else{
             //default query
 
-            $customSelect = '';
-            if($this->reports_model->crm_id == 1){
-                $customSelect = "COUNT(CASE WHEN c_is_web_shopper = 1 AND CALLRESULT =  'AG' THEN 1 ELSE NULL END) AS 'WEB_SHOPPER_AG_CTR',";
-            }
+            $customSelect = "   IF(callresult IN ('NI', 'CB'), sub_callresult,
+									IF (callresult = 'AG', 'SALES', callresult)
+								) AS 'FINAL_DISPO',
+            ";
 
-            $selectFields = "	lead_identity,
-							callresult,
-							IF(callresult IN ('NI', 'CB'), sub_callresult,
-								IF (callresult = 'AG' AND sv_card_request_by_client IS NOT NULL, (sv_card_request_by_client),
+            if($this->reports_model->crm_id == 1){
+
+                $customSelect = "IF(callresult IN ('NI', 'CB'), sub_callresult,
+								    IF (callresult = 'AG' AND sv_card_request_by_client IS NOT NULL, (sv_card_request_by_client),
 										IF (callresult = 'AG' AND sv_card_request_by_client IS NULL, 'SALE_UNVERIFIED' ,callresult)
 									)
-								) AS 'FINAL_DISPO',
+								) AS 'FINAL_DISPO',";
+                $customSelect .= "COUNT(CASE WHEN c_is_web_shopper = 1 AND CALLRESULT =  'AG' THEN 1 ELSE NULL END) AS 'WEB_SHOPPER_AG_CTR',";
+
+            }
+
+            $selectFields = "
+                            lead_identity,
+							callresult,
 							{$customSelect}
 							COUNT(CASE WHEN c_location = 'MANILA' THEN 1 ELSE NULL END) AS 'MLA',
 							COUNT(CASE WHEN c_location = 'PROVINCIAL' THEN 1 ELSE NULL END) AS 'PROV',
