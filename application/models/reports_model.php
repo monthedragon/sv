@@ -335,5 +335,88 @@ Class Reports_model extends CI_Model{
 		
 		return $retVal;
 	}
+
+    public function getVerifiedRecords(){
+
+        $pdata = $this->input->post();
+        $crmDetails = $this->my_utils->get_crm_by_id($pdata['crm_id']);
+
+        $targetRecId = $this->getSVVerifiedRecords();
+        $contactList = $this->getRecordsFromMainDB($targetRecId, $crmDetails);
+        return $this->reconContactList($contactList, $crmDetails);
+    }
+
+    public function getSVVerifiedRecords(){
+        $pdata = $this->input->post();
+        $whereArr = array(  'sales.verified_date >='=>$pdata['start_calldate'] . ' 00:00:00',
+                            'sales.verified_date <='=>$pdata['end_calldate'] . ' 23:59:59',);
+
+        $whereArr['crm.id'] = $pdata['crm_id'];
+
+        $result = $this->db->select('table_recid',false)
+            ->from('sales')
+            ->join('crm', ' crm.crm_code =  sales.crm_code')
+            ->where($whereArr)
+            ->get()
+            ->result_array();
+         //echo $this->db->last_query();
+
+        return $result;
+    }
+
+    public function getRecordsFromMainDB($recordIdArr, $crmDetails){
+
+        $pdata = $this->input->post();
+
+        $newconn = $this->my_utils->change_conn($crmDetails);
+        $mainTable = $crmDetails['main_table'];
+        $calldateField = $crmDetails['calldate_field'];
+        $agentField = $crmDetails['agent_field'];
+        $crField = $crmDetails['callresult_field'];
+        $saleTag  = $crmDetails['sale_tag'];
+        $castedCalldate = '';
+
+        $whereArr = array(  "{$calldateField} >="=>$pdata['start_calldate'] . ' 00:00:00',
+                            "{$calldateField} <="=>$pdata['end_calldate'] . ' 23:59:59');
+
+        // Determine date format and grouping based on report type
+        if ($pdata['type'] == 'daily') {
+            $castedCalldate = "DATE({$calldateField}) AS report_date";
+        } elseif ($pdata['type'] == 'monthly') {
+            $castedCalldate = "DATE_FORMAT({$calldateField}, '%Y-%m') AS report_date";
+        } else { // yearly
+            $castedCalldate = "YEAR({$calldateField}) AS report_date";
+        }
+
+        $result = $newconn->select("{$agentField}, {$castedCalldate}, COUNT(*) AS total", false)
+            ->from($mainTable)
+            ->where($whereArr)
+            ->group_by("{$agentField}, report_date")
+            ->order_by('report_date', 'ASC')
+            ->get()
+            ->result_array();
+        //echo $newconn->last_query();
+
+        //echo "<pre>";
+        //print_r($result);
+        return $result;
+    }
+
+    public function reconContactList($result, $crmDetails){
+        $pivotData = [];
+        $agentField = $crmDetails['agent_field'];
+        $columns = [];
+
+        foreach ($result as $row) {
+            $agent = $row[$agentField];
+            $date = $row['report_date'];
+            $pivotData[$agent][$date] = $row['total'];
+            $columns[$date] = $date;
+        }
+
+//        echo "<pre>";
+//        print_r($pivotData);
+        return [$pivotData, $columns];
+    }
 }
 ?>

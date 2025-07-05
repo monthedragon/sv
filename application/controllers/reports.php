@@ -785,5 +785,34 @@ Class Reports extends Auth_Controller{
 
 		return preg_replace('/[^0-9\-]/', '', $number); // Removes special chars
 	}
+
+    public function swVerifiedReport(){
+        $this->set_header_data(PROJECT_NAME,'Verified Report');
+        $crms = $this->my_utils->get_all_crms();
+        $newCrms = array();
+
+        foreach($crms as $details){
+            $newCrms[$details['id']] = $details['name'];
+        }
+
+        $data['start_calldate'] = isset($pdata['start_date']) ? $pdata['start_calldate'] : date('Y-m-01');
+        $data['end_calldate'] = isset($pdata['end_calldate']) ? $pdata['end_calldate'] : date('Y-m-d');
+        $data['crms'] = $newCrms;
+        $data['rptTypes'] = $this->getLookupBatch(array('report_type'))['report_type'];
+
+        $this->load->view('reports/swVerifiedReport',$data);
+        $this->load->view('templates/footer');
+    }
+
+
+    public function generateVR(){
+        $pdata = $this->input->post();
+        $this->reports_model->crm_id = $pdata['crm_id'];
+        $data['agentList'] = $this->reports_model->get_agent_list_in_main_table();
+        $data['type'] = $pdata['type'];
+        list($data['dataList'], $data['columnArr']) = $this->reports_model->getVerifiedRecords();
+        $this->load->view('reports/verifiedReport',$data);
+    }
+
 }
 ?>

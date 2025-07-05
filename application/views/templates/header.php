@@ -92,9 +92,10 @@
 									<li><a href='<?=base_url()?>reports/conversion_rate' >CONVERTION RATE</a></li>
 									<li><a href='<?=base_url()?>reports/outbound_report' >OUTBOUND REPORT</a></li>
 									<?if($user_type == ADMIN_CODE){?>
-									<li><a href='<?=base_url()?>reports/verify' >VPH</a></li>
+									    <li><a href='<?=base_url()?>reports/verify' >VPH</a></li>
 									<?}?>
-									<li><a href='<?=base_url()?>reports/los' >LOS</a></li>
+                                    <li><a href='<?=base_url()?>reports/los' >LOS</a></li>
+                                    <li><a href='<?=base_url()?>reports/swVerifiedReport' >VERIFIED REPORT</a></li>
 							</ul>
 						</li>
 
