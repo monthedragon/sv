@@ -17,7 +17,7 @@
 
     foreach ($dataList as $agent => $dateData) {
         $agentName = isset($agentList[$agent]) ? $agentList[$agent] : $agent;
-        echo "<tr><td>{$agentName}</td>";
+        echo "<tr class='tr-list'><td>{$agentName}</td>";
         foreach ($columnArr as $date) {
             $value = isset($dateData[$date]) ? $dateData[$date] : 0;
             echo "<td>{$value}</td>";
@@ -27,3 +27,10 @@
 
     echo "</table>";
 ?>
+
+
+<script>
+    $(function(){
+        hover_out_tr_fx('tr-list');
+    })
+</script>
