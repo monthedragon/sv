@@ -787,7 +787,7 @@ Class Reports extends Auth_Controller{
 	}
 
     public function swVerifiedReport(){
-        $this->set_header_data(PROJECT_NAME,'Verified Report');
+        $this->set_header_data(PROJECT_NAME,'Verified Sales Report');
         $crms = $this->my_utils->get_all_crms();
         $newCrms = array();
 

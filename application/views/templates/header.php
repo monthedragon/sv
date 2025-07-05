@@ -95,7 +95,7 @@
 									    <li><a href='<?=base_url()?>reports/verify' >VPH</a></li>
 									<?}?>
                                     <li><a href='<?=base_url()?>reports/los' >LOS</a></li>
-                                    <li><a href='<?=base_url()?>reports/swVerifiedReport' >VERIFIED REPORT</a></li>
+                                    <li><a href='<?=base_url()?>reports/swVerifiedReport' >VERIFIED SALES</a></li>
 							</ul>
 						</li>
 
