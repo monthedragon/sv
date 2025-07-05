@@ -413,7 +413,7 @@ Class Reports_model extends CI_Model{
         }
 
         $result = $newconn->get()->result_array();
-        echo $newconn->last_query();
+        //echo $newconn->last_query();
 
 //        echo "<pre>";
 //        print_r($result);
