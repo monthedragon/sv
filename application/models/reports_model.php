@@ -340,10 +340,11 @@ Class Reports_model extends CI_Model{
 
         $pdata = $this->input->post();
         $crmDetails = $this->my_utils->get_crm_by_id($pdata['crm_id']);
-
         $targetRecId = $this->getSVVerifiedRecords();
+
         $contactList = $this->getRecordsFromMainDB($targetRecId, $crmDetails);
-        return $this->reconContactList($contactList, $crmDetails);
+
+        return $this->reconVerifiedContactList($contactList, $crmDetails);
     }
 
     public function getSVVerifiedRecords(){
@@ -359,9 +360,14 @@ Class Reports_model extends CI_Model{
             ->where($whereArr)
             ->get()
             ->result_array();
-         //echo $this->db->last_query();
+        //echo $this->db->last_query();
 
-        return $result;
+        $flatArray = array();
+        foreach ($result as $row) {
+            $flatArray[] = $row['table_recid'];
+        }
+
+        return $flatArray;
     }
 
     public function getRecordsFromMainDB($recordIdArr, $crmDetails){
@@ -388,21 +394,33 @@ Class Reports_model extends CI_Model{
             $castedCalldate = "YEAR({$calldateField}) AS report_date";
         }
 
-        $result = $newconn->select("{$agentField}, {$castedCalldate}, COUNT(*) AS total", false)
+        $selectField = "COUNT(*) AS total"; //default count
+        if($crmDetails['crm_code'] == 'supple_nomination'){
+            $selectField  = "COUNT(DISTINCT {$mainTable}.id) AS total, ";
+            $selectField  .= "COUNT(DISTINCT supplementary.id) AS total_supple";
+        }
+
+        $newconn->select("{$agentField}, {$castedCalldate}, {$selectField}", false)
             ->from($mainTable)
             ->where($whereArr)
+            ->where_in('contact_list.id', $recordIdArr)
             ->group_by("{$agentField}, report_date")
-            ->order_by('report_date', 'ASC')
-            ->get()
-            ->result_array();
-        //echo $newconn->last_query();
+            ->order_by("report_date ASC, {$agentField} ASC");
 
-        //echo "<pre>";
-        //print_r($result);
+        if($crmDetails['crm_code'] == 'supple_nomination'){
+            //special handling for supple, explicitly join the 'supplementary' table to count the registered supplementary records.
+            $newconn->join('supplementary', " supplementary.baserecid =  {$mainTable}.id AND supplementary.supple_status = 'complete'");
+        }
+
+        $result = $newconn->get()->result_array();
+        echo $newconn->last_query();
+
+//        echo "<pre>";
+//        print_r($result);
         return $result;
     }
 
-    public function reconContactList($result, $crmDetails){
+    public function reconVerifiedContactList($result, $crmDetails){
         $pivotData = [];
         $agentField = $crmDetails['agent_field'];
         $columns = [];
@@ -410,7 +428,17 @@ Class Reports_model extends CI_Model{
         foreach ($result as $row) {
             $agent = $row[$agentField];
             $date = $row['report_date'];
-            $pivotData[$agent][$date] = $row['total'];
+
+            $value = $row['total'];
+
+            if($crmDetails['crm_code'] == 'supple_nomination'){
+                //special handling for supple_nomincation; display the count of valid supple
+                if($row['total_supple'] > 0){
+                    $value .= " ({$row['total_supple']})";
+                }
+            }
+            $pivotData[$agent][$date] = $value;
+
             $columns[$date] = $date;
         }
 
