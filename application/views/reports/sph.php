@@ -15,7 +15,7 @@ foreach($sph as $agent_id=>$sph){?>
 			foreach($times as $k=>$time){
 				$ctr = isset($sph[$k]) ? $sph[$k] : 0 ;
 		?>
-			<td class="<?=($ctr ? 'cursor_red_bold' : '' )?>"><?=$ctr?></td>
+			<td class="<?=($ctr ? 'cursor_red_bold' : '' )?>"><?=number_format($ctr,0)?></td>
 		<?
                 if(!isset($totalArr[$k])) $totalArr[$k] = 0;
                 $totalArr[$k] += $ctr;
@@ -24,7 +24,7 @@ foreach($sph as $agent_id=>$sph){?>
 			}
 		?>
 
-		<td class="cursor_red_bold"><?=$running_total?></td>
+		<td class="cursor_red_bold"><?=number_format($running_total,0)?></td>
 	</tr>
 <?}
 
@@ -38,10 +38,10 @@ foreach ($times as $k => $time) {
     $val = isset($totalArr[$k]) ? $totalArr[$k] : 0;
     $grandTotal += $val;
     $cls = $val ? 'cursor_red_bold' : '';
-    echo "<td class='{$cls}'>{$val}</td>";
+    echo "<td class='{$cls}'>".number_format($val,0)."</td>";
 }
 
-echo "<td class='cursor_red_bold'>{$grandTotal}</td>";
+echo "<td class='cursor_red_bold'>".number_format($grandTotal,0)."</td>";
 echo "</tr>";
 ?>
 </table>
