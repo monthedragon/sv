@@ -9,7 +9,7 @@
 <?
 $totalArr = array();
 foreach($sph as $agent_id=>$sph){?>
-	<tr>
+	<tr class ='tr_list'>
 		<td><?=$agentArr[strtolower($agent_id)]?></td>
 		<?	$running_total = 0;
 			foreach($times as $k=>$time){
@@ -45,3 +45,11 @@ echo "<td class='cursor_red_bold'>".number_format($grandTotal,0)."</td>";
 echo "</tr>";
 ?>
 </table>
+
+
+<script>
+    $(function(){
+        $(".tr-list").mouseover(function(){$(this).addClass('tr_highlight');});
+        $(".tr-list").mouseout(function(){$(this).removeClass('tr_highlight');});
+    })
+</script>
