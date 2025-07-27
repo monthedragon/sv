@@ -9,7 +9,7 @@
 <?
 $totalArr = array();
 foreach($sph as $agent_id=>$sph){?>
-	<tr class ='tr_list'>
+	<tr class ='tr-list'>
 		<td><?=$agentArr[strtolower($agent_id)]?></td>
 		<?	$running_total = 0;
 			foreach($times as $k=>$time){
