@@ -61,7 +61,7 @@
 						<li><a   style='color:red;' href="<?php echo  base_url() . 'main/';?>"> HOME </a></li>
 
 						<li>
-							<a > Users</a>
+							<a > USERS</a>
 							<ul>
 								<?if(isset($privs[179])){?>
 									<li><span class='cursor-pointer '><a href="<?php echo  base_url() . 'users/';?>"> user list</a>  </span></li>
@@ -100,7 +100,7 @@
 						</li>
 
 						<!--<li><a  href='<?=base_url()?>reports/'>Reports</a></li>-->
-						<li><a href="<?php echo  base_url() . 'security/logout';?>">Logout</a> </li>
+						<li><a href="<?php echo  base_url() . 'security/logout';?>">LOGOUT</a> </li>
 					<?php endif;?>
 
 				</ul>

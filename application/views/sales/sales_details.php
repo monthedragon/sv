@@ -1,216 +1,219 @@
 <!-------REMARKS VIEW-------->
 <!--<div style='position: fixed;width:500px;float:right;top: 25%; right: 10px'>-->
-<div style='position: relative;width:500px;float:right;height:100px;'>
-	<div style='position:absolute;right:0px;cursor:pointer' id='div-toggle-remarks'>
-		T o g g l e &nbsp; R e m a r k s
-	</div>
-	<div id='div-remarks' style='width: 80%;position: absolute;top: 15%;right: 0px;background-color:white;padding:10px;max-height:200px;overflow:auto'>
-	</div>
+<div id="divRemarks"
+     style="position:fixed; top:135px; right:20px; width:500px;
+            background:#fff; border:1px solid #ccc; box-shadow:0 2px 6px rgba(0,0,0,.2);
+            border-radius:6px; padding:10px; transition:top .2s ease;">
+    <div id="div-toggle-remarks" style="cursor:pointer; text-align:right; font-weight:bold;">
+        Toggle Remarks
+    </div>
+    <div id="div-remarks" style="margin-top:10px; max-height:400px; overflow:auto;">
+        <!-- remarks go here -->
+    </div>
 </div>
 <!-------------------------->
-
-<form>
-
-    <!--HIDDEN FIELDS START HERE-->
-        <input type='hidden' name='hidden[crm_id]' value='<?=$crm_id?>'>
-    <!--HIDDEN FIELDS ENDS HERE-->
-<?
-    $html = '<table width=70%>';
-//table TD width
-    $html .= '<tr>
-                <td width=2%></td>
-                <td width=1%></td>
-                <td width=1%></td>
-                <td width=1%></td>
-            </tr>';
-    //loop thru field_mappings according to the set tables
-    foreach($field_mappings as $table_id=>$fields){
-
-
-        $table_name = strtoupper((isset($table_details[$table_id]) ? $table_details[$table_id]['foreign_mask_name'] : TABLE_MASK));
-        $html .= "<tr class='tr_header'><td colspan=5> {$table_name} </td></tr>";
-
-        //loop thru sales details per table
-        if(!isset($sales[$table_id])){
-            $html .= "<tr><td style='text-align:center' colspan=5><span class=warning>NO DETAILS</span></td></tr>";
-            continue;
-        }
+<div style="float: left; width: 65%; padding: 10px;">
+    <form>
+        <!--HIDDEN FIELDS START HERE-->
+            <input type='hidden' name='hidden[crm_id]' value='<?=$crm_id?>'>
+        <!--HIDDEN FIELDS ENDS HERE-->
+    <?
+        $html = '<table width=100%>';
+    //table TD width
+        $html .= '<tr>
+                    <td width=2%></td>
+                    <td width=1%></td>
+                    <td width=1%></td>
+                    <td width=1%></td>
+                </tr>';
+        //loop thru field_mappings according to the set tables
+        foreach($field_mappings as $table_id=>$fields){
 
 
-        $saleTotalCtr = count($sales[$table_id]);
-        $saleCtr =0;
+            $table_name = strtoupper((isset($table_details[$table_id]) ? $table_details[$table_id]['foreign_mask_name'] : TABLE_MASK));
+            $html .= "<tr class='tr_header'><td colspan=5> {$table_name} </td></tr>";
 
-        foreach($sales[$table_id] as $foreign_table_id=>$details){
-
-            foreach($fields as $fieldDetails){
-
-                if(!isset($details[$fieldDetails['field_name']])) continue;
-
-                $saleDetails = $details[$fieldDetails['field_name']];
-                $html .= "<tr class=><td class=>";
-                $html .= '<b>'.(!empty($fieldDetails['mask_name']) ? $fieldDetails['mask_name'] : $fieldDetails['field_name']) .'</b>';
-                $html .="</td><td id='td_{$fieldDetails['field_name']}'>";
-				$originalValue = '';
-				if($fieldDetails['field_type']=='select'){
-
-                    if(isset($lookup[$fieldDetails['lu_cat']])){
-                        $options = $lookup[$fieldDetails['lu_cat']];
-                        $originalValue = (isset($options[$saleDetails['original_value']]) ? $options[$saleDetails['original_value']] : '');
-                    }
-					
-				}else{
-					$originalValue = $saleDetails['original_value'];
-				}
-                $html .= $originalValue;
-                $html .='</td><td>';
-
-
-                //set the foreign_table_name as the array name for each field this is to identify where table to be saved!
-                $foreign_table_name = (isset($table_details[$table_id]['foreign_table_name']) ? $table_details[$table_id]['foreign_table_name'] : 'main');
-
-                //comment for the meantime if foreign is 0 then set it as is!!
-                //if foreign_id is 0 then this is for main_table then we need to get the table_recid from sales/system_db else foreign table!
-//                $foreign_id = ($saleDetails['foreign_table_id']==0) ? $sale_main_details['table_recid'] : $saleDetails['foreign_table_id'];
-
-                //if foreign_id is 0 then this is for main_table then we need to set it 0 else foreign table!
-                //this is very important to identify what rows to be updated on the main or foreign table!!!
-                $foreign_id = $saleDetails['foreign_table_id'];
-
-                //fieldName is set according to the foreign_table_id[baserecid/recid][field_name] this will be render on the save part!
-                $fieldName = "{$table_id}[{$foreign_id}][{$fieldDetails['field_name']}]";
-
-                //check if required if set then show default value!
-                $default = (($fieldDetails['is_required']==1) ? $saleDetails['original_value'] : '');
-
-                //new Value
-                $newValue = $saleDetails['new_value'];
-
-                //is set to empty meaning the value of the field is forced to empty
-                //empty value has speacial tagging!
-                $is_set_empty = 0;
-                $readonly = '';
-                if($newValue == EMPTY_TAG){
-                    //if set to empty then readonly the field
-                    $is_set_empty = 1;
-                    $readonly =' readonly';
-                }
-
-                //set required if set as 1
-                //required-conditional is a class used if change the status to pending then remove all required under this class!
-                $required = (($fieldDetails['is_required']==1) ? 'required required-conditional' : '');
-
-                //consolidate classes here maybe in the future I can set multiple clas
-                $class = $required;
-
-                //consolidate all misc here maybe in the futire i can set multiple misc
-                $misc = $readonly;
-
-                //set the object's ID
-                $objID = $fieldDetails['field_name'].'_'.$table_id.'_'.$foreign_id;
-
-
-                if($fieldDetails['field_type']=='input'){
-
-                    //DRAW INPUT
-                    $html .= input($objID,$fieldName,'input',$class,$saleDetails['new_value'],$default,$misc,50,200,$view_only);
-
-                }elseif($fieldDetails['field_type']=='select'){
-
-                    if(isset($lookup[$fieldDetails['lu_cat']])){
-                        $options = $lookup[$fieldDetails['lu_cat']];
-                        $noOpt = 0;
-                    }else{
-                        $options =array(); //if not set then show empty options! error catcher!!
-                        $noOpt = 1;
-                    }
-
-                    //DRAW SELECT
-                    //readonly is not applicable for select! so no matter even we include that in misc!
-                    $html .= select($objID,$fieldName,$class,$saleDetails['new_value'],$default,$misc,$options,1,$view_only);
-
-                    if($noOpt)
-                        $html .= " &nbsp; <span class=warning> {$fieldDetails['lu_cat']}  is not set! ";
-
-                }else{
-
-                    //DRAW VALUE
-                    $html .= $saleDetails['new_value'];
-                }
-
-
-                //DRAW EMPTY BUTTON
-
-                $html .= '</td><td>';
-                if(!$view_only)
-                    $html .= "<span class='cursor-pointer spn-empty' obj_type='{$fieldDetails['field_type']}' obj_id ='{$objID}' is_empty='$is_set_empty'>[empty]</span>";
-
-                $html .= '</td></tr>';
-
+            //loop thru sales details per table
+            if(!isset($sales[$table_id])){
+                $html .= "<tr><td style='text-align:center' colspan=5><span class=warning>NO DETAILS</span></td></tr>";
+                continue;
             }
 
-            if($saleCtr!=$saleTotalCtr-1)
-                $html .= "<tr class='tr_separator'><td colspan=5> </td></tr>";
 
-            $saleCtr++;
+            $saleTotalCtr = count($sales[$table_id]);
+            $saleCtr =0;
+
+            foreach($sales[$table_id] as $foreign_table_id=>$details){
+
+                foreach($fields as $fieldDetails){
+
+                    if(!isset($details[$fieldDetails['field_name']])) continue;
+
+                    $saleDetails = $details[$fieldDetails['field_name']];
+                    $html .= "<tr class=><td class=>";
+                    $html .= '<b>'.(!empty($fieldDetails['mask_name']) ? $fieldDetails['mask_name'] : $fieldDetails['field_name']) .'</b>';
+                    $html .="</td><td id='td_{$fieldDetails['field_name']}'>";
+                    $originalValue = '';
+                    if($fieldDetails['field_type']=='select'){
+
+                        if(isset($lookup[$fieldDetails['lu_cat']])){
+                            $options = $lookup[$fieldDetails['lu_cat']];
+                            $originalValue = (isset($options[$saleDetails['original_value']]) ? $options[$saleDetails['original_value']] : '');
+                        }
+
+                    }else{
+                        $originalValue = $saleDetails['original_value'];
+                    }
+                    $html .= $originalValue;
+                    $html .='</td><td>';
+
+
+                    //set the foreign_table_name as the array name for each field this is to identify where table to be saved!
+                    $foreign_table_name = (isset($table_details[$table_id]['foreign_table_name']) ? $table_details[$table_id]['foreign_table_name'] : 'main');
+
+                    //comment for the meantime if foreign is 0 then set it as is!!
+                    //if foreign_id is 0 then this is for main_table then we need to get the table_recid from sales/system_db else foreign table!
+    //                $foreign_id = ($saleDetails['foreign_table_id']==0) ? $sale_main_details['table_recid'] : $saleDetails['foreign_table_id'];
+
+                    //if foreign_id is 0 then this is for main_table then we need to set it 0 else foreign table!
+                    //this is very important to identify what rows to be updated on the main or foreign table!!!
+                    $foreign_id = $saleDetails['foreign_table_id'];
+
+                    //fieldName is set according to the foreign_table_id[baserecid/recid][field_name] this will be render on the save part!
+                    $fieldName = "{$table_id}[{$foreign_id}][{$fieldDetails['field_name']}]";
+
+                    //check if required if set then show default value!
+                    $default = (($fieldDetails['is_required']==1) ? $saleDetails['original_value'] : '');
+
+                    //new Value
+                    $newValue = $saleDetails['new_value'];
+
+                    //is set to empty meaning the value of the field is forced to empty
+                    //empty value has speacial tagging!
+                    $is_set_empty = 0;
+                    $readonly = '';
+                    if($newValue == EMPTY_TAG){
+                        //if set to empty then readonly the field
+                        $is_set_empty = 1;
+                        $readonly =' readonly';
+                    }
+
+                    //set required if set as 1
+                    //required-conditional is a class used if change the status to pending then remove all required under this class!
+                    $required = (($fieldDetails['is_required']==1) ? 'required required-conditional' : '');
+
+                    //consolidate classes here maybe in the future I can set multiple clas
+                    $class = $required;
+
+                    //consolidate all misc here maybe in the futire i can set multiple misc
+                    $misc = $readonly;
+
+                    //set the object's ID
+                    $objID = $fieldDetails['field_name'].'_'.$table_id.'_'.$foreign_id;
+
+
+                    if($fieldDetails['field_type']=='input'){
+
+                        //DRAW INPUT
+                        $html .= input($objID,$fieldName,'input',$class,$saleDetails['new_value'],$default,$misc,50,200,$view_only);
+
+                    }elseif($fieldDetails['field_type']=='select'){
+
+                        if(isset($lookup[$fieldDetails['lu_cat']])){
+                            $options = $lookup[$fieldDetails['lu_cat']];
+                            $noOpt = 0;
+                        }else{
+                            $options =array(); //if not set then show empty options! error catcher!!
+                            $noOpt = 1;
+                        }
+
+                        //DRAW SELECT
+                        //readonly is not applicable for select! so no matter even we include that in misc!
+                        $html .= select($objID,$fieldName,$class,$saleDetails['new_value'],$default,$misc,$options,1,$view_only);
+
+                        if($noOpt)
+                            $html .= " &nbsp; <span class=warning> {$fieldDetails['lu_cat']}  is not set! ";
+
+                    }else{
+
+                        //DRAW VALUE
+                        $html .= $saleDetails['new_value'];
+                    }
+
+
+                    //DRAW EMPTY BUTTON
+
+                    $html .= '</td><td>';
+                    if(!$view_only)
+                        $html .= "<span class='cursor-pointer spn-empty' obj_type='{$fieldDetails['field_type']}' obj_id ='{$objID}' is_empty='$is_set_empty'>[empty]</span>";
+
+                    $html .= '</td></tr>';
+
+                }
+
+                if($saleCtr!=$saleTotalCtr-1)
+                    $html .= "<tr class='tr_separator'><td colspan=5> </td></tr>";
+
+                $saleCtr++;
+            }
+
+            $html .= "<tr class='tr_footer'><td colspan=5>  <br> </td></tr>";
         }
 
-        $html .= "<tr class='tr_footer'><td colspan=5>  <br> </td></tr>";
+    $html .= '</table>';
+
+    //final render here!
+    echo $html;
+
+    if($crm_id == 9){
+        echo "<input type = 'button' value = 'Generate FAMU' onclick='generateErequest();'>";
+        echo "<div id='challenger_div'></div>";
     }
 
-$html .= '</table>';
+    //Standard e-request div
+    echo "<span id='e_request_div'></span>";
 
-//final render here!
-echo $html;
+    ?>
+        <?if($view_only){?>
+            <input type='button' value='back' class='btn-back-to-list'>
+        <?}else{?>
 
-if($crm_id == 9){
-	echo "<input type = 'button' value = 'Generate FAMU' onclick='generateErequest();'>";
-	echo "<div id='challenger_div'></div>";
-}
+            <!--SV FORM for verification!-->
+            <table width=100%>
+                <tr class='tr_header_green'><td colspan=5> SV REMARKS </td></tr>
+                <tr>
+                    <td valign=top>Remarks</td>
+                    <td><?=textarea('sv-remarks','SV[remarks]','')?></td>
+                </tr>
 
-//Standard e-request div
-echo "<span id='e_request_div'></span>";
+                <tr>
+                    <td valign=top>Status</td>
+                    <td><?=select('sv-status','SV[status]','required','',null,null,$lu['sv_status'])?></td>
+                </tr>
 
-?>
-    <?if($view_only){?>
-        <input type='button' value='back' class='btn-back-to-list'>
-    <?}else{?>
+                <tr>
+                    <td valign=top>Alert</td>
+                    <td><?=select('sv-alert','SV[alert]','','',null,null,$lu['ol_alert'])?></td>
+                </tr>
+            </table>
 
-        <!--SV FORM for verification!-->
-        <table width=100%>
-            <tr class='tr_header_green'><td colspan=5> SV REMARKS </td></tr>
-            <tr>
-                <td valign=top>Remarks</td>
-                <td><?=textarea('sv-remarks','SV[remarks]','')?></td>
-            </tr>
+            <?php
+            if($crm_id == 9) {
+                echo "<input type='submit' value='Save and Generate E-REQUEST' id='btn-submit-form' class='btn_sumbmit' action_type='e_request'> <br>";
+                echo "<input type='submit' value='Save and Generate FAMU' id='btn-submit-form' class='btn_sumbmit' action_type='pamu'> <br>";
+            }elseif($crm_id == 10) {
+                echo "<input type='submit' value='Save and Generate E-REQUEST' id='btn-submit-form' class='btn_sumbmit' action_type='e_request_save'> <br>";
+            }else{
+                echo "<input type='submit' value='save' id='btn-submit-form' class='btn_sumbmit'>";
+            }
+            ?>
 
-            <tr>
-                <td valign=top>Status</td>
-                <td><?=select('sv-status','SV[status]','required','',null,null,$lu['sv_status'])?></td>
-            </tr>
+            <input type='button' value='back' class='btn-back-to-list'>
+            <span style='color:red; font-weight:bold' id='spn_loader'></span>
 
-            <tr>
-                <td valign=top>Alert</td>
-                <td><?=select('sv-alert','SV[alert]','','',null,null,$lu['ol_alert'])?></td>
-            </tr>
-        </table>
-
-		<?php
-        if($crm_id == 9) {
-            echo "<input type='submit' value='Save and Generate E-REQUEST' id='btn-submit-form' class='btn_sumbmit' action_type='e_request'> <br>";
-            echo "<input type='submit' value='Save and Generate FAMU' id='btn-submit-form' class='btn_sumbmit' action_type='pamu'> <br>";
-        }elseif($crm_id == 10) {
-            echo "<input type='submit' value='Save and Generate E-REQUEST' id='btn-submit-form' class='btn_sumbmit' action_type='e_request_save'> <br>";
-        }else{
-			echo "<input type='submit' value='save' id='btn-submit-form' class='btn_sumbmit'>";
-		}		
-		?>
-        
-		<input type='button' value='back' class='btn-back-to-list'>
-		<span style='color:red; font-weight:bold' id='spn_loader'></span>
-
-    <?}?>
-</form>
-
+        <?}?>
+    </form>
+</div>
 <script>
 
 function generateErequest(){
@@ -570,6 +573,15 @@ function populateSourceCode(){
                 populateSourceCode();
             });
         }
+
+        var initialTop = 135;
+        $(window).on("scroll", function() {
+            if ($(window).scrollTop() > 0) {
+                $("#divRemarks").css("top", "5px");  // stick to very top
+            } else {
+                $("#divRemarks").css("top", initialTop + "px");  // restore gap
+            }
+        });
 
     })
 </script>

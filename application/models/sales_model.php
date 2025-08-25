@@ -608,8 +608,11 @@ class Sales_model extends CI_Model {
 	 */
 	 public function get_alerts(){
 		$retValArr = array();
-		$result = $this->db->from('sales')->where('alert !=',0)
-						->order_by('time_stamp,crm_code')
+		$result = $this->db->select('sales.*,crm.id AS crm_id')
+                        ->from('sales')
+                        ->join('crm',' crm.crm_code = sales.crm_code')
+                        ->where('sales.alert !=',0)
+						->order_by('sales.time_stamp,sales.crm_code')
 						->get()->result_array();
 						
 		foreach($result as $details){

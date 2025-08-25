@@ -30,7 +30,7 @@ $tr=1;
 foreach($remarks as $details){
 ?>
 	<tr class='<?=(!$tr?'tr-odd':'tr-even')?>'>
-		<td valign=top width=15%>
+		<td valign=top width=20%>
 			<!---TODO ADD HERE IF SV MAASK NAME OR NOTE--->
 			<?=(!empty($details['mask_name']) ? $details['mask_name'] : $users[$details['user_id']])?>
 			<br>

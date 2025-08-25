@@ -108,11 +108,11 @@ table.tbl_sale td{border-bottom:1px solid #000000;padding-bottom:5px;padding-top
 tr.header td{border-bottom:0px solid #000000;font-weight:bold;background:#c0c0c0;padding:5px;}
 **/
 
-.tbl_sale{font-family: Arial,"Helvetica",sans-serif;font-size: 11px;text-align: left;border-collapse: collapse;}
+.tbl_sale{font-family: Arial,"Helvetica",sans-serif;font-size: 11px;text-align: left;border-collapse: collapse;border-radius: 10px;overflow: hidden;}
 .tbl_sale td.divider{padding:3px;background: #FFFBE4;border-top: 1px solid #fff;color: #669;font-size: 11px;font-weight:bold}
 .tbl_sale tr:hover td.divider{background: #FFFBE4}
-.tbl_sale thead td{padding:7px;font-weight:normal;font-size:12px;color:#039;background:#b9c9fe;}
-.tbl_sale tbody tr:hover td{background: #d0dafd;}
+.tbl_sale thead td{padding:7px;font-weight:normal;font-size:12px;color:white;background:#4CAF50;text-transform: uppercase;}
+.tbl_sale tbody tr:hover td{background: #f1f1f1;}
 /*.tbl_sale tr{padding:5px;background: #e8edff;border-top: 1px solid #fff;color: #669;}*/
 .tbl_sale tfoot td.flr{	background: #e8edff url('images/round-corner/botleft.png') left bottom no-repeat;}
 .tbl_sale tfoot td.frr{	background: #e8edff url('images/round-corner/botright.png') right bottom no-repeat;}
@@ -211,10 +211,11 @@ form#frm-edit-contact input,select {
 	box-shadow: inner 0 0 4px rgba(0, 0, 0, 0.2);
 }
 
-input{
-	border:0; 
+input,
+select{
+	border:0;
 	border:solid 1px #c0c0c0 ; 
-	padding:2px; 
+	padding:5px;
 	padding-left:5px;
 	font-size: 1em;
 	font-family:arial,tahoma,arial;
@@ -254,9 +255,21 @@ input.red-button:hover {
 	background-color:#2554C7;
 }
 
-input[type=button]{
+input[type=button],
+input[type=submit]{
     cursor:pointer;
+    padding:5px 15px 5px 15px;
+    background-color: #4CAF50;
+    color: #ffffff;
 }
+
+input[type=button]:hover,
+input[type=submit]:hover{
+    opacity: 0.85;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
 input[type=submit]{
     cursor:pointer;
 }
@@ -407,7 +420,7 @@ tr.header2 td{border-bottom:2px solid #000000;font-weight:bold;padding:5px;}
 tr.tr_header td{
     border-bottom: 2px solid #c0c0c0;
     font-weight:bold;
-    background-color:#CCFFFF;
+    background-color:lightgreen;
 }
 tr.tr_header_green td{
     border-bottom: 2px solid #c0c0c0;

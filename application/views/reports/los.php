@@ -12,13 +12,9 @@
 	<tr>
 		<td>Target Date:</td>
 		<td>
-			<?=input('start_calldate','start_calldate','input','date required',$start_calldate);?>
-			<?=input('end_calldate','end_calldate','input','date required',$end_calldate);?>
-		</td>
-	</tr>
-	<tr>
-		<td colspan=3>
-				<input type='submit' value='generate' id='btn-search'>
+			<?=input('start_calldate','start_calldate','date','date required',$start_calldate);?>
+			<?=input('end_calldate','end_calldate','date','date required',$end_calldate);?>
+            <input type='submit' value='generate' id='btn-search'>
 		</td>
 	</tr>
 </table>
@@ -28,9 +24,6 @@
 
 <script>
 	$(function(){
-		
-		$(".date").datepicker({'dateFormat':'yy-mm-dd'});
-		
 		$('form').submit(function(){
 		
 			if($(this).valid()){

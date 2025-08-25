@@ -8,14 +8,9 @@
 	<tr>
 		<td>Calldate:</td>
 		<td colspan=3>
-				<?=input('start_calldate','start_calldate','input','date',$start_calldate);?>
-				<?=input('end_calldate','end_calldate','input','date',$end_calldate);?>
-		</td>
-	</tr>
-	
-	<tr>
-		<td colspan=3>
-				<input type='submit' value='search' id='btn-search'>
+            <?=input('start_calldate','start_calldate','date','date',$start_calldate);?>
+            <?=input('end_calldate','end_calldate','date','date',$end_calldate);?>
+            <input type='submit' value='search' id='btn-search'>
 		</td>
 	</tr>
 </table>

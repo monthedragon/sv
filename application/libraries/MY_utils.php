@@ -45,7 +45,7 @@ class my_utils extends CI_Model {
 
 	public function get_all_crms(){
 		$retValArr = array();
-		$result = $this->db->from('crm')->get()->result_array();
+		$result = $this->db->from('crm')->where('is_active',1)->get()->result_array();
 		
 		foreach($result  as $details){
 			$retValArr[$details['crm_code']] = $details;

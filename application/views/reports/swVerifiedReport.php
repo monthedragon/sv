@@ -8,8 +8,8 @@
     <tr>
         <td>Calldate:</td>
         <td colspan=3>
-            <?=input('start_calldate','start_calldate','input','date required',$start_calldate);?>
-            <?=input('end_calldate','end_calldate','input','date required',$end_calldate);?>
+            <?=input('start_calldate','start_calldate','date','date required',$start_calldate);?>
+            <?=input('end_calldate','end_calldate','date','date required',$end_calldate);?>
         </td>
     </tr>
 
@@ -30,8 +30,6 @@
 
 <script>
 	$(function(){
-
-        $(".date").datepicker({'dateFormat':'yy-mm-dd'});
 
 		$('form').submit(function(){
 

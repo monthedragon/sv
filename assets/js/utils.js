@@ -349,7 +349,6 @@ function set_empty_to_dom(empty_tag){
 }
 
 function init_search_fx(url){
-		$(".date").datepicker({'dateFormat':'yy-mm-dd'});
 		
 		$('.div_activator').click(function(){
 			var div_list_target = $(this).attr('div_list_target');
