@@ -140,21 +140,21 @@
         <p>Total Sales</p>
     </div>
     <div class="card">
+        <h2 style="color:red"><?=$salesSummary['new_sales']?></h2>
+        <p>New Sales</p>
+    </div>
+
+    <div class="card">
         <h2><?=$salesSummary['verified_sales']?></h2>
         <p>Verified Sales</p>
     </div>
-    <div class="card">
-        <h2><?=$salesSummary['new_sales']?></h2>
-        <p>Pending Verification</p>
-    </div>
-
     <?php
         if($alerts){
             $totalAlert = 0;
             foreach($alerts as $type => $details){
                 $totalAlert += $details['count'];
                 echo "<div class='card'>
-                        <h2>{$details['count']}</h2>
+                        <h2 style='color:#b56d00'>{$details['count']}</h2>
                         <p>".ucwords(strtolower($type))."</p>
                     </div>";
             }
