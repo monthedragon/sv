@@ -2,7 +2,6 @@
 	<table class='tbl-search'>
 		<tr>
 			<td>
-				Calldate:
 				<?=input('calldate','calldate','date','date',$calldate);?>
 				<input type='submit' value='search' id='btn-search'>
 			</td>

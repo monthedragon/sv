@@ -38,8 +38,7 @@
 
 		<?if(isset($is_logged)){?>
             <div class='div-logo'  >
-                <?=img('assets/images/logo.PNG',FALSE,150)?>
-
+                <?=img('assets/images/logo.PNG',FALSE,200)?>
             </div>
 			<div class='div-top-userinfo'><?=strtoupper("$user_name ($user_type)")?></div>
 		<?}?>

@@ -35,12 +35,12 @@ if(isset($sales[0][0])){
 		$bank_name = isset($lookup['bank_name'][$c_bank_name]) ? $lookup['bank_name'][$c_bank_name] : '';
 		$del_addr = $bank_name . ' ' . $c_account_number .' '. $c_account_name . ' ' .  $c_branch;
 	}
-	
-	//2021-07-31
-	$p_fee = 350;
-	if($c_mode_of_cashout == 'crediting'){
-		$p_fee = 250;
-	}
+
+    //2025-08-31 processing fee for all types will be fixed to 500
+	//$p_fee = 350;
+	//if($c_mode_of_cashout == 'crediting'){
+	//	$p_fee = 250;
+	//}
 	
 	$ch_campaign = trim(str_replace('Challenger 2','',$ch_campaign));
 	
@@ -76,12 +76,12 @@ if(isset($sales[0][0])){
 		//Added 2020-11-07 requested by Ms A
 		$bank_name_bt = isset($lookup['bank_name'][$c_bank_name_bt]) ? $lookup['bank_name'][$c_bank_name_bt] : '';
 		$message .= "OTHER BANK, {$bank_name_bt} {$c_cc_no_bt} {$c_name_on_cc} <br>";
-		$message .= "INFORMED POL AND PROCESSING FEE(250) <br>";
+		$message .= "INFORMED POL AND PROCESSING FEE(500) <br>";
 		$bt_added_note = 'CH OK TO CHANGE BT AMOUNT <br>';
 	}else{
 		//2021-08-07 change the wordings of {$moca}
 		$message .= "REQ {$moca}, {$del_addr}<br>";
-		$message .= "INFORMED POL AND PROCESSING FEE($p_fee)<br>";
+		$message .= "INFORMED POL AND PROCESSING FEE(500)<br>";
 	}
 	
 	$message .= "PASSED PID: {$pid}";
