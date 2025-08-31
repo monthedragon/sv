@@ -36,12 +36,17 @@ if(isset($sales[0][0])){
 		$del_addr = $bank_name . ' ' . $c_account_number .' '. $c_account_name . ' ' .  $c_branch;
 	}
 
-    //2025-08-31 processing fee for all types will be fixed to 500
-	//$p_fee = 350;
-	//if($c_mode_of_cashout == 'crediting'){
-	//	$p_fee = 250;
-	//}
-	
+    if($c_product == 'cash_loan'){
+        //when cash_log fix the processing fee to 500 
+        $p_fee = 500;
+    }else{
+        //2025-08-31 processing fee for all types will be fixed to 500
+        $p_fee = 350;
+        if($c_mode_of_cashout == 'crediting'){
+            $p_fee = 250;
+        }
+    }
+
 	$ch_campaign = trim(str_replace('Challenger 2','',$ch_campaign));
 	
 	//as of 2020-03-14 [COVID] add dynamically the calldate YEAR and MONTh 
@@ -74,6 +79,7 @@ if(isset($sales[0][0])){
 	$bt_added_note = '';
 	if($c_product == 'balance_transfer'){
 		//Added 2020-11-07 requested by Ms A
+        //Set processing fee as 500
 		$bank_name_bt = isset($lookup['bank_name'][$c_bank_name_bt]) ? $lookup['bank_name'][$c_bank_name_bt] : '';
 		$message .= "OTHER BANK, {$bank_name_bt} {$c_cc_no_bt} {$c_name_on_cc} <br>";
 		$message .= "INFORMED POL AND PROCESSING FEE(500) <br>";
@@ -81,7 +87,7 @@ if(isset($sales[0][0])){
 	}else{
 		//2021-08-07 change the wordings of {$moca}
 		$message .= "REQ {$moca}, {$del_addr}<br>";
-		$message .= "INFORMED POL AND PROCESSING FEE(500)<br>";
+		$message .= "INFORMED POL AND PROCESSING FEE($p_fee)<br>";
 	}
 	
 	$message .= "PASSED PID: {$pid}";
