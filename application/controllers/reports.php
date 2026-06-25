@@ -719,42 +719,23 @@ Class Reports extends Auth_Controller{
 			if(isset($card_requestLUp[$d['sv_sv_card_request_by_client']])){
 				$card_request = $card_requestLUp[$d['sv_sv_card_request_by_client']];
 			}
-			
-			$this->excel_xml->setCellValue('A'.$row, $d['cust_nbr']);
-			$this->excel_xml->setCellValue('B'.$row, $cur_date);
-			$this->excel_xml->setCellValue('C'.$row, $card_request .'/' . $d['2nd_card_credit_limit']);
-			$this->excel_xml->setCellValue('D'.$row, $d['sv_sv_source_code']);
-			//2021-07-18 changed from sv_sv_prep_p_code to sv_sv_card_request_by_client
-			//Since sv_sv_card_request_by_client is now a PULLDOWN
-			$this->excel_xml->setCellValue('E'.$row, $d['sv_sv_card_request_by_client']); //$amf_product[$d['amf_product']] //changed to sv_prep_p_code as per requested @2021-07-03
-			$this->excel_xml->setCellValue('F'.$row, $d['pd_name']);
-			$this->excel_xml->setCellValue('G'.$row, strtoupper(str_replace('.','',$d['sv_sv_title']))); //added 2021-07-03
-			$this->excel_xml->setCellValue('H'.$row, $d['c_lastname']);
-			$this->excel_xml->setCellValue('I'.$row, $d['c_firstname']);
-			$this->excel_xml->setCellValue('J'.$row, $d['c_middlename']);
-			$this->excel_xml->setCellValue('K'.$row, $d['pd_name']);
-			$this->excel_xml->setCellValue('L'.$row, $d['c_name_in_card']);
-			$this->excel_xml->setCellValue('M'.$row, $d['c_nationality']);
-			$this->excel_xml->setCellValue('N'.$row, $d['c_us_tin']);
-			$this->excel_xml->setCellValue('O'.$row, $mobile_no);
-			$this->excel_xml->setCellValue('P'.$row, $this->setLOSMobileNo($d['officeno'],$home_no));
-			$this->excel_xml->setCellValue('Q'.$row, $d['c_sss_gsis']);
-			$this->excel_xml->setCellValue('R'.$row, $d['tin']);
-			$this->excel_xml->setCellValue('S'.$row, $d['c_tin']);
-			$this->excel_xml->setCellValue('T'.$row, $d['email_addr']);
-			$this->excel_xml->setCellValue('U'.$row, $d['c_esoa']);
-			$this->excel_xml->setCellValue('V'.$row, $yesnoneLU[$d['c_is_web_shopper']]);
-			$this->excel_xml->setCellValue('BC'.$row,$yesnoneLU[$d['c_with_personal_changes']]);
-			$this->excel_xml->setCellValue('BE'.$row, $d['sv_last_remark']);
-			
-			//added 2021-07-03
-			//BILLING ADDRESS CHANNEL
-			$this->excel_xml->setCellValue('Z'.$row, $d['sv_sv_bill_add_ch']);
-			//CARD DELIVERY CHANNEL
-			$this->excel_xml->setCellValue('AA'.$row, $d['sv_sv_card_del_ch']);
-			//On Authority to Disclose:(YES/NO)
-			$this->excel_xml->setCellValue('BD'.$row, $yesnoneLU[$d['sv_sv_on_auth_to_disc']]);
-			
+
+            //New LOS format
+            //Even the fields declared here are under 'c_',
+            //From the agent side those are in read-only format
+            $this->excel_xml->setCellValue('A'.$row, $d['c_lastname']);
+            $this->excel_xml->setCellValue('B'.$row, $d['c_firstname']);
+            $this->excel_xml->setCellValue('C'.$row, $d['c_middlename']);
+
+            $this->excel_xml->setCellValue('AC'.$row, $d['cust_nbr']);
+            $this->excel_xml->setCellValue('AX'.$row, $d['sv_sv_source_code']);
+            $this->excel_xml->setCellValue('AY'.$row, $card_request);
+            //2021-07-18 changed from sv_sv_prep_p_code to sv_sv_card_request_by_client
+            //Since sv_sv_card_request_by_client is now a PULLDOWN
+            $this->excel_xml->setCellValue('AZ'.$row, $d['sv_sv_card_request_by_client']);
+            $this->excel_xml->setCellValue('BL'.$row, $d['2nd_card_credit_limit']);
+            $this->excel_xml->setCellValue('BT'.$row, $d['sv_last_remark']);
+
 			$this->excel_xml->addRows($row,1);
 		}
 		
