@@ -14,7 +14,8 @@
 		<td>
 			<?=input('start_calldate','start_calldate','date','date required',$start_calldate);?>
 			<?=input('end_calldate','end_calldate','date','date required',$end_calldate);?>
-            <input type='submit' value='generate' id='btn-search'>
+            <input type='submit' value='generate' id='btn-search' data-rpt-type="old">
+            <input type='submit' value='new format' data-rpt-type="new">
 		</td>
 	</tr>
 </table>
@@ -25,9 +26,16 @@
 <script>
 	$(function(){
 		$('form').submit(function(){
-		
+            const btn = document.activeElement;
+
+            const rptType = btn.dataset.rptType;
+            const controller = rptType === 'new'
+                ? 'generate_new_los_rpt'
+                : 'generate_los_rpt';
+
 			if($(this).valid()){
-				var url = "<?=base_url('reports/generate_los_rpt')?>";
+				var url = "<?=base_url('reports/')?>/" + controller;
+                alert(url);
 				var data = $(this).serialize();
 				var type ='POST';
 				
