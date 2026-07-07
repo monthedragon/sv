@@ -35,7 +35,6 @@
 
 			if($(this).valid()){
 				var url = "<?=base_url('reports/')?>/" + controller;
-                alert(url);
 				var data = $(this).serialize();
 				var type ='POST';
 				
