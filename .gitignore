@@ -4,4 +4,5 @@ application/config/config.php
 /index.php
 uploads/
 assets/images/logo*
+application/logs/*
 .idea/
