@@ -60,5 +60,8 @@ define('ADMIN_CODE','admin');
 define('TABLE_MASK','TABLE DETAILS');
 define('EMPTY_TAG','--EMPTY--');
 
+//This is for the API Chat
+define('API_CHAT_SECRET_KEY', 'WillReplaceInProd');
+
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */
