@@ -64,8 +64,26 @@ $db['default']['swap_pre'] = '';
 $db['default']['autoinit'] = TRUE;
 $db['default']['stricton'] = FALSE;
 
- 
- 
+/**
+ * SSO Database config for Chat
+ * This lets MY_Session connect to the SSO DB
+ * to read from app_sessions.
+ */
+$db['sso']['hostname'] = 'localhost';
+$db['sso']['username'] = 'root';
+$db['sso']['password'] = '';
+$db['sso']['database'] = 'sso';
+$db['sso']['dbdriver'] = 'mysqli';
+$db['sso']['dbprefix'] = '';
+$db['sso']['pconnect'] = FALSE;
+$db['sso']['db_debug'] = FALSE;
+$db['sso']['cache_on'] = FALSE;
+$db['sso']['cachedir'] = '';
+$db['sso']['char_set'] = 'utf8';
+$db['sso']['dbcollat'] = 'utf8_general_ci';
+$db['sso']['swap_pre'] = '';
+$db['sso']['autoinit'] = TRUE;
+$db['sso']['stricton'] = FALSE;
 
 
 /* End of file database.php */

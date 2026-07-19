@@ -408,20 +408,20 @@ function populateSourceCode(){
 
     $(function(){
         set_empty_to_dom('<?=EMPTY_TAG?>');
-		
+
 
         $('form').submit(function(){
 			var btn_submit = $(this).find("input[type=submit]:focus" );
 
             if($(this).valid()){
-				
+
 				if('<?=$crm_id?>' == 1){
 					var old_home_no = $('#sv_home_no_0_0').closest('td').prev('td').html();
 					var old_mobile_no = $('#sv_mobile_no_0_0').closest('td').prev('td').html();
-					
+
 					var change_in_home = $('#sv_home_no_0_0').val();
 					var change_in_mobile = $('#sv_mobile_no_0_0').val();
-					
+
 					if(change_in_home != old_home_no || change_in_mobile != old_mobile_no){
 						if(!confirm("Changes found on mobile or home! \r\nDo you want to proceed?")){
 							return false;
@@ -436,65 +436,87 @@ function populateSourceCode(){
                     data:data,
                     type:'POST',
                     beforeSend:function(){
-						$(".btn_sumbmit").prop('disabled',true);
-						$('#spn_loader').html('Please wait . . . ');
+
+                        $(".btn_sumbmit").prop('disabled',true);
+                        $('#spn_loader').html('Please wait . . . ');
 					},
                     success:function(data){
-						
-		
+                        console.log(data);
+
                         if('<?=isset($_REQUEST['debug'])?>'){
-							
+
                             alert('DEBUG INFO: '+data);
-							
-                        }else if('<?=$crm_id?>' == 9){
-                            var a_t = btn_submit.attr('action_type');
-                            var modal_url = '';
-
-                            if(a_t == 'e_request'){
-                                //generate e_request
-                                modal_url = '<?=base_url('sales/challenger_e_request/'.$sale_id.'/'.$crm_id)?>';
-                            }else if(a_t == 'pamu'){
-                                //generate PAMU
-                                modal_url = '<?=base_url('sales/challenger_e_request/'.$sale_id.'/'.$crm_id.'/1')?>';
-                            }
-
-                            if($('#sv-status').val() == '1'){
-                                do_modal(modal_url,'challenger_div', a_t,400,850);
-                            }else{
-                                backToList();
-                            }
-
-                        }else if('<?=$crm_id?>' == 10){
-                            var a_t = btn_submit.attr('action_type');
-                            var modal_url = '';
-
-                            //generate e_request
-                            modal_url = '<?=base_url('sales/supple_e_request/'.$sale_id.'/'.$crm_id)?>';
-
-                            if($('#sv-status').val() == '1'){
-                                do_modal(modal_url,'e_request_div', a_t,400,850);
-                            }else{
-                                backToList();
-                            }
 
                         }else{
-													
-							if($('#sv-status').val() == '1'){
-								window.open('<?=base_url('reports/generate_xls_report/'.$crm_id.'/'.$sale_main_details['table_recid'])?>')
-							}
-													
-                            alert('saved!');
-							backToList();
-                        }
 
+                            // Function to continue the existing legacy flow
+                            var continueAfterChat = function(){
+
+                                if('<?=$crm_id?>' == 9){
+                                    var a_t = btn_submit.attr('action_type');
+                                    var modal_url = '';
+
+                                    if(a_t == 'e_request'){
+                                        //generate e_request
+                                        modal_url = '<?=base_url('sales/challenger_e_request/'.$sale_id.'/'.$crm_id)?>';
+                                    }else if(a_t == 'pamu'){
+                                        //generate PAMU
+                                        modal_url = '<?=base_url('sales/challenger_e_request/'.$sale_id.'/'.$crm_id.'/1')?>';
+                                    }
+
+                                    if($('#sv-status').val() == '1'){
+                                        do_modal(modal_url,'challenger_div', a_t,400,850);
+                                    }else{
+                                        backToList();
+                                    }
+
+                                }else if('<?=$crm_id?>' == 10){
+
+                                    var a_t = btn_submit.attr('action_type');
+                                    var modal_url = '';
+
+                                    //generate e_request
+                                    modal_url = '<?=base_url('sales/supple_e_request/'.$sale_id.'/'.$crm_id)?>';
+
+                                    if($('#sv-status').val() == '1'){
+                                        do_modal(modal_url,'e_request_div', a_t,400,850);
+                                    }else{
+                                        backToList();
+                                    }
+
+                                }else{
+
+                                    if($('#sv-status').val() == '1'){
+                                        window.open('<?=base_url('reports/generate_xls_report/'.$crm_id.'/'.$sale_main_details['table_recid'])?>');
+                                    }
+
+                                    alert('saved!');
+                                    backToList();
+                                }
+                            };
+
+                            if(data){
+                                // If has response, commonly the chat fails
+                                var response = JSON.parse(data);
+                                if (response.ok === false) {
+                                    alert(
+                                        'The sales information was saved, but the automatic chat message could not be sent.\n\n' +
+                                            'Error: ' + response.error
+                                    );
+                                }
+                            }
+
+                            continueAfterChat();
+
+                        }
                     },
                     complete:function(){
                         $('.btn_sumbmit').removeProp('disabled');
 						$('#spn_loader').html('');
                     },
-					error:function(data){
-						alert(data);
-					}
+                    error: function(data) {
+                        alert(data)
+                    }
                 })
 
             }else{

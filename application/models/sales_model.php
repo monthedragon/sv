@@ -568,6 +568,59 @@ class Sales_model extends CI_Model {
         }
 
         $this->update_sales_and_remarks($sale_id,$svRemarks,$saleMainDetails);
+
+        $this->sendAutoChatMessage($saleMainDetails, $svRemarks);
+    }
+
+    private function sendAutoChatMessage($saleMainDetails, $svRemarks){
+        $pdata = $this->input->post();
+        if ($pdata['SV']['status'] == '2') {
+
+            $prefix = "[SV Auto] Pended sale\n\n";
+            $prefix .= "Customer name:\n";
+            $prefix .= " {$saleMainDetails['firstname']} {$saleMainDetails['lastname']}\n\n";
+            $prefix .= "Reason:\n";
+
+            $chat_data = array(
+                'sender' => $this->session->userdata['username'],
+                'recipient' => $saleMainDetails['agent_id'],
+                'message'   => $prefix . $pdata['SV']['remarks'],
+                'secret'    => API_CHAT_SECRET_KEY
+            );
+
+            $chat_url = 'http://localhost/chat/api/sendMessage';
+
+            // Send request to Chat API
+            $ch = curl_init($chat_url);
+
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($chat_data));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HEADER, false);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+
+            $chat_response = curl_exec($ch);
+            $chat_result = json_decode($chat_response, true);
+
+            $chat_http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+            curl_close($ch);
+
+            if ($chat_http_code != 200) {
+
+                log_message(
+                    'error',
+                    'Chat cURL failed. Error #' . $chat_response
+                );
+
+                echo $chat_response;
+                exit();
+            }
+
+            $chat_http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+
+        }
     }
 
     public function update_sales_and_remarks($sale_id,$svRemarks,$saleMainDetails){
