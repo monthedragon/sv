@@ -22,7 +22,7 @@
 		<td width=1%>&nbsp;</td>
 		<td>customer</td>
 		<td>calldate</td>
-		<td>status</td>
+		<td class="text-center">status</td>
 		<td>agent</td>
 		<td>sv</td>
 		<td width=1>actions</td>
@@ -61,9 +61,11 @@
                         <?=$details['lastname']?>
                     </a>
                 </td>
-				<td colspan=8>
-					AVAILABLE
+                <td></td>
+				<td class="text-center" >
+                    <span class='status_label status_available'>AVAILABLE</span>
 				</td>
+                <td colspan="5"></td>
             </tr>
         <?}?>
    <?}?>
@@ -87,7 +89,9 @@
                     </a>
                 </td>
 				<td><?=render_date($details['calldate'],5)?></td>
-                <td><?=$lu['ol_status'][$details['status']]?></td>
+                <td class='text-center'>
+                    <span class='status_label status_<?=$details['status']?>'><?=$lu['ol_status'][$details['status']]?></span>
+                </td>
                 <td><?=$details['agent_name']?></td>
                 <!--
                     TODO
