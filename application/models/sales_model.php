@@ -576,7 +576,7 @@ class Sales_model extends CI_Model {
         $pdata = $this->input->post();
         if ($pdata['SV']['status'] == '2') {
 
-            $prefix = "[SV Auto] Pended sale\n\n";
+            $prefix = "<b>[SV Auto] Pended sale</b>\n\n";
             $prefix .= "Customer name:\n";
             $prefix .= " {$saleMainDetails['firstname']} {$saleMainDetails['lastname']}\n\n";
             $prefix .= "Reason:\n";
@@ -588,7 +588,7 @@ class Sales_model extends CI_Model {
                 'secret'    => API_CHAT_SECRET_KEY
             );
 
-            $chat_url = 'http://localhost/chat/api/sendMessage';
+            $chat_url = $this->config->item('chat_send_message_endpoint');
 
             // Send request to Chat API
             $ch = curl_init($chat_url);
